@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>ScheduleShare needs calendar access to save extracted events to your calendar.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>ScheduleShare needs camera access to capture event information.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ScheduleShare needs photo library access to select screenshots.</string>
+</dict>
+</plist>

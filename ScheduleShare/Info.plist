@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	
+	<!-- REQUIRED: Privacy Usage Descriptions for ScheduleShare -->
+	<key>NSCameraUsageDescription</key>
+	<string>ScheduleShare needs camera access to capture event information from screenshots and photos. This allows you to quickly create calendar events by taking pictures of invitations, flyers, or any text containing event details.</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ScheduleShare needs photo library access to select existing screenshots with event information. You can choose photos from your library that contain event details to automatically extract and create calendar events.</string>
+	
+	<key>NSCalendarsUsageDescription</key>
+	<string>ScheduleShare needs calendar access to save extracted events to your calendar. This allows the app to automatically add events after extracting information from your screenshots.</string>
+	
+	<!-- OPTIONAL: Enhanced functionality -->
+	<key>NSContactsUsageDescription</key>
+	<string>ScheduleShare can access your contacts to make sharing events easier by suggesting contacts when sharing calendars.</string>
+	
+	<!-- LOCATION: For route planning -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ScheduleShare uses your location to optimize route planning between events. This helps calculate the best travel times and routes from your current position to your scheduled events.</string>
+</dict>
+</plist>
