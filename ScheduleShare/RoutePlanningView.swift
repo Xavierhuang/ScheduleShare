@@ -10,8 +10,8 @@ import CoreLocation
 
 struct RoutePlanningView: View {
     @EnvironmentObject var appState: AppState
-    @StateObject private var locationManager = LocationManager()
-    @StateObject private var routePlanner: RoutePlanner
+    @State private var locationManager = CLLocationManager()
+    @StateObject private var aiRoutePlanner: AIRoutePlanner
     @Environment(\.presentationMode) var presentationMode
     
     let events: [CalendarEvent]
@@ -19,11 +19,12 @@ struct RoutePlanningView: View {
     @State private var showingMapOptions = false
     @State private var selectedLocationForMap: LocationCoordinate?
     @State private var selectedEventForMap: CalendarEvent?
+    @State private var isCalculating = false
+    @State private var currentRoute: Route?
     
     init(events: [CalendarEvent]) {
         self.events = events
-        let locationManager = LocationManager()
-        self._routePlanner = StateObject(wrappedValue: RoutePlanner(locationManager: locationManager))
+        self._aiRoutePlanner = StateObject(wrappedValue: AIRoutePlanner(apiKey: "YOUR_OPENAI_API_KEY_HERE"))
     }
     
     var body: some View {
@@ -47,7 +48,7 @@ struct RoutePlanningView: View {
                     LocationStatusView(locationManager: locationManager)
                     
                     // Route Overview
-                    if let route = routePlanner.currentRoute {
+                    if let route = currentRoute {
                         RouteOverviewCard(route: route, onTapEvent: { event in
                             selectedEventForMap = event
                             showingMapOptions = true
@@ -58,7 +59,7 @@ struct RoutePlanningView: View {
                             selectedLocationForMap = location
                             showingMapOptions = true
                         })
-                    } else if routePlanner.isCalculating {
+                    } else if isCalculating {
                         CalculatingRouteView()
                     } else {
                         // Calculate Route Button
@@ -97,7 +98,7 @@ struct RoutePlanningView: View {
         }
         .alert("Location Permission", isPresented: $showingLocationPermission) {
             Button("Allow") {
-                locationManager.requestLocationPermission()
+                locationManager.requestWhenInUseAuthorization()
             }
             Button("Not Now", role: .cancel) { }
         } message: {
@@ -133,7 +134,7 @@ struct RoutePlanningView: View {
         case .notDetermined:
             showingLocationPermission = true
         case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.startLocationUpdates()
+            locationManager.startUpdatingLocation()
         case .denied, .restricted:
             // Use default location
             break
@@ -142,8 +143,35 @@ struct RoutePlanningView: View {
         }
     }
     
+    private func requestLocationPermission() {
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
     private func calculateRoute() {
-        routePlanner.calculateRoute(for: events)
+        isCalculating = true
+        
+        // Create starting location from current location or first event
+        let startingLocation: LocationCoordinate?
+        if let currentLocation = locationManager.location {
+            startingLocation = LocationCoordinate(
+                latitude: currentLocation.coordinate.latitude,
+                longitude: currentLocation.coordinate.longitude
+            )
+        } else {
+            startingLocation = nil
+        }
+        
+        // Generate route plan using AI
+        aiRoutePlanner.generateCompleteRoutePlan(for: events, startingLocation: startingLocation) { routePlan in
+            DispatchQueue.main.async {
+                var route = Route(events: events, startingLocation: startingLocation)
+                route.routeSegments = routePlan.segments
+                route.totalTravelTime = routePlan.totalTravelTime
+                route.totalCost = routePlan.totalCost
+                self.currentRoute = route
+                self.isCalculating = false
+            }
+        }
     }
     
     // MARK: - Maps Integration
@@ -203,20 +231,20 @@ struct RoutePlanningView: View {
 
 // MARK: - Location Status View
 struct LocationStatusView: View {
-    @ObservedObject var locationManager: LocationManager
+    let locationManager: CLLocationManager
     
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: locationManager.isLocationEnabled ? "location.fill" : "location.slash")
-                .foregroundColor(locationManager.isLocationEnabled ? .green : .orange)
+            Image(systemName: locationManager.location != nil ? "location.fill" : "location.slash")
+                .foregroundColor(locationManager.location != nil ? .green : .orange)
                 .font(.title3)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(locationManager.isLocationEnabled ? "Location Enabled" : "Location Not Available")
+                Text(locationManager.location != nil ? "Location Enabled" : "Location Not Available")
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
-                Text(locationManager.isLocationEnabled ? "Route optimized from your location" : "Using default starting point")
+                Text(locationManager.location != nil ? "Route optimized from your location" : "Using default starting point")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -249,7 +277,7 @@ struct RouteOverviewCard: View {
                         .font(.headline)
                         .fontWeight(.semibold)
                     
-                    Text("\(route.events.count) events • \(formatTime(route.totalTravelTime)) travel")
+                    Text("\(route.events.count) events • \(formatTime(TimeInterval(route.totalTravelTime))) travel")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -436,7 +464,7 @@ struct AISuggestionCard: View {
         )
     }
     
-    private func iconForSuggestionType(_ type: AISuggestion.SuggestionType) -> String {
+    private func iconForSuggestionType(_ type: SuggestionType) -> String {
         switch type {
         case .routeOptimization: return "arrow.triangle.2.circlepath"
         case .timeManagement: return "clock"
@@ -492,11 +520,7 @@ struct RouteSegmentCard: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: segment.transportationMode.icon)
-                .foregroundColor(segment.transportationMode.color == "blue" ? .blue : 
-                               segment.transportationMode.color == "green" ? .green :
-                               segment.transportationMode.color == "orange" ? .orange :
-                               segment.transportationMode.color == "yellow" ? .yellow :
-                               .gray)
+                .foregroundColor(segment.transportationMode.color)
                 .font(.title3)
                 .frame(width: 30)
             
@@ -509,7 +533,7 @@ struct RouteSegmentCard: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
-                Text("\(formatTime(segment.travelTime)) • $\(String(format: "%.2f", segment.cost))")
+                Text("\(formatTime(TimeInterval(segment.travelTime))) • $\(String(format: "%.2f", segment.cost))")
                     .font(.caption)
                     .foregroundColor(.purple)
             }

@@ -299,7 +299,7 @@ struct CalendarView: View {
             // Also listen to the events array directly
             print("🔄 Events array updated, refreshing calendar...")
         }
-        .onChange(of: appState.eventsLastModified) { _ in
+        .onChange(of: appState.events) { _ in
             // Refresh when events are modified (not just count changes)
             print("🔄 Events modified, refreshing calendar...")
             refreshTrigger.toggle()
@@ -381,7 +381,7 @@ struct CalendarView: View {
     }
     
     private func deleteEvent(_ event: CalendarEvent) {
-        appState.removeEvent(event)
+        appState.deleteEvent(event)
         
         // Clear selected event state if we're deleting the selected event
         if selectedEventId == event.id {
@@ -587,17 +587,6 @@ struct EventRowView: View {
                 Spacer()
                 
                 VStack(spacing: 4) {
-                    if event.sourceImage != nil {
-                        Image(systemName: "photo")
-                            .font(.caption)
-                            .foregroundColor(.purple)
-                            .padding(4)
-                            .background(
-                                Circle()
-                                    .fill(Color.purple.opacity(0.1))
-                            )
-                    }
-                    
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .foregroundColor(.secondary)

@@ -177,7 +177,6 @@ struct ManualEventCreationView: View {
             endDate: eventEndDate,
             location: eventLocation.isEmpty ? nil : eventLocation,
             notes: eventNotes.isEmpty ? nil : eventNotes,
-            sourceImage: nil,
             extractedInfo: nil
         )
         

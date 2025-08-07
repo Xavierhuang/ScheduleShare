@@ -277,7 +277,8 @@ struct EventCreationView: View {
     private func populateEventFields(from info: ExtractedEventInfo) {
         print("🔍 Populating fields from extracted info:")
         print("🔍 Title: \(info.title ?? "nil")")
-        print("🔍 Date: \(info.dateTime?.description ?? "nil")")
+        print("🔍 Start Date: \(info.startDateTime?.description ?? "nil")")
+        print("🔍 End Date: \(info.endDateTime?.description ?? "nil")")
         print("🔍 Location: \(info.location ?? "nil")")
         print("🔍 Description: \(info.description ?? "nil")")
         print("🔍 Confidence: \(info.confidence)")
@@ -377,7 +378,6 @@ struct EventCreationView: View {
             endDate: eventEndDate,
             location: eventLocation.isEmpty ? nil : eventLocation,
             notes: eventNotes.isEmpty ? nil : eventNotes,
-            sourceImage: selectedImage,
             extractedInfo: extractedInfo
         )
         

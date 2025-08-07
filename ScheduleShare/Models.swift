@@ -5,7 +5,7 @@ import CoreLocation
 
 // MARK: - Core Data Models
 
-struct CalendarEvent: Identifiable, Codable {
+struct CalendarEvent: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var startDate: Date
@@ -39,7 +39,7 @@ struct CalendarEvent: Identifiable, Codable {
     }
 }
 
-struct ExtractedEventInfo: Codable {
+struct ExtractedEventInfo: Codable, Equatable {
     let rawText: String
     var title: String?
     var startDateTime: Date?
@@ -175,6 +175,54 @@ struct CompleteRoutePlanResponse: Codable {
     let totalCost: Double
 }
 
+// MARK: - AI Suggestion Models
+
+enum SuggestionType: String, Codable, CaseIterable {
+    case routeOptimization = "routeOptimization"
+    case transportation = "transportation"
+    case timeManagement = "timeManagement"
+    case costOptimization = "costOptimization"
+    case socialCoordination = "socialCoordination"
+    
+    var displayName: String {
+        switch self {
+        case .routeOptimization: return "Route Optimization"
+        case .transportation: return "Transportation"
+        case .timeManagement: return "Time Management"
+        case .costOptimization: return "Cost Optimization"
+        case .socialCoordination: return "Social Coordination"
+        }
+    }
+}
+
+struct AISuggestion: Identifiable, Codable {
+    let id = UUID()
+    let type: SuggestionType
+    let title: String
+    let description: String
+    let confidence: Double
+    let action: String
+    let costSavings: Double?
+    let timeSavings: Int? // in seconds
+    
+    var formattedCostSavings: String? {
+        guard let savings = costSavings else { return nil }
+        return String(format: "$%.2f", savings)
+    }
+    
+    var formattedTimeSavings: String? {
+        guard let savings = timeSavings else { return nil }
+        let minutes = savings / 60
+        if minutes >= 60 {
+            let hours = minutes / 60
+            let remainingMinutes = minutes % 60
+            return "\(hours)h \(remainingMinutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+}
+
 struct RouteSegmentData: Codable {
     let fromLocation: String
     let toLocation: String
@@ -233,7 +281,6 @@ class AppState: ObservableObject {
     private let aiRoutePlanner: AIRoutePlanner
     
     init() {
-        self.locationManager = locationManager
         // Use the same API key as AITextExtractor
         self.aiRoutePlanner = AIRoutePlanner(apiKey: "YOUR_OPENAI_API_KEY_HERE")
     }
@@ -245,7 +292,7 @@ class AppState: ObservableObject {
         
         // Create starting location from current location or first event
         let startingLocation: LocationCoordinate?
-        if let currentLocation = locationManager.currentLocation {
+        if let currentLocation = locationManager.location {
             startingLocation = LocationCoordinate(
                 latitude: currentLocation.coordinate.latitude,
                 longitude: currentLocation.coordinate.longitude
@@ -281,21 +328,46 @@ class AppState: ObservableObject {
     func addEvent(_ event: CalendarEvent) {
         events.append(event)
         saveEventsToLocalStorage()
-        calendarManager.saveEvent(event)
+        calendarManager.saveEvent(event) { result in
+            switch result {
+            case .success(let identifier):
+                print("✅ Event saved to calendar with ID: \(identifier)")
+            case .failure(let error):
+                print("❌ Failed to save event to calendar: \(error.localizedDescription)")
+            }
+        }
     }
     
     func updateEvent(_ event: CalendarEvent) {
         if let index = events.firstIndex(where: { $0.id == event.id }) {
             events[index] = event
             saveEventsToLocalStorage()
-            calendarManager.updateEvent(event)
+            if let identifier = event.eventIdentifier {
+                calendarManager.updateEvent(identifier: identifier, with: event) { result in
+                    switch result {
+                    case .success:
+                        print("✅ Event updated in calendar")
+                    case .failure(let error):
+                        print("❌ Failed to update event in calendar: \(error.localizedDescription)")
+                    }
+                }
+            }
         }
     }
     
     func deleteEvent(_ event: CalendarEvent) {
         events.removeAll { $0.id == event.id }
         saveEventsToLocalStorage()
-        calendarManager.deleteEvent(event)
+        if let identifier = event.eventIdentifier {
+            calendarManager.deleteEvent(identifier: identifier) { result in
+                switch result {
+                case .success:
+                    print("✅ Event deleted from calendar")
+                case .failure(let error):
+                    print("❌ Failed to delete event from calendar: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
     // MARK: - Local Storage
@@ -336,11 +408,19 @@ class AppState: ObservableObject {
             event.startDate >= startOfDay && event.startDate < endOfDay
         }.sorted { $0.startDate < $1.startDate }
     }
+    
+    func clearAllEvents() {
+        events.removeAll()
+        saveEventsToLocalStorage()
+        print("🗑️ All events cleared from local storage")
+    }
 }
 
 // MARK: - Error Types
 
 enum AIExtractionError: Error, LocalizedError {
+    case invalidURL
+    case noData
     case clientNotInitialized
     case invalidResponse
     case invalidJSON
@@ -348,6 +428,10 @@ enum AIExtractionError: Error, LocalizedError {
     
     var errorDescription: String? {
         switch self {
+        case .invalidURL:
+            return "Invalid API URL"
+        case .noData:
+            return "No data received from API"
         case .clientNotInitialized:
             return "AI client not initialized"
         case .invalidResponse:

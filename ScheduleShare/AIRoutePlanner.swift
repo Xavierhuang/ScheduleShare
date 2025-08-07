@@ -164,6 +164,7 @@ class AIRoutePlanner: ObservableObject {
     private func parseCompleteRoutePlan(from content: String, events: [CalendarEvent]) -> RoutePlan {
         print("🔍 Raw AI route plan response: \(content)")
         
+        // Clean the JSON string first
         let cleanedJson = cleanJsonString(content)
         print("🔍 Cleaned JSON: \(cleanedJson)")
         
@@ -176,88 +177,39 @@ class AIRoutePlanner: ObservableObject {
                 let eventIndex = min(index, events.count - 1)
                 let event = events[eventIndex]
                 
+                // Parse location strings to coordinates (simplified)
+                let fromLocation = LocationCoordinate(
+                    latitude: 40.7128, // NYC default
+                    longitude: -74.0060,
+                    address: segmentData.fromLocation
+                )
+                let toLocation = LocationCoordinate(
+                    latitude: 40.7128, // NYC default
+                    longitude: -74.0060,
+                    address: segmentData.toLocation
+                )
+                
                 return RouteSegment(
-                    fromLocation: LocationCoordinate(
-                        latitude: segmentData.fromLocation.latitude,
-                        longitude: segmentData.fromLocation.longitude,
-                        address: segmentData.fromLocation.address
-                    ),
-                    toLocation: LocationCoordinate(
-                        latitude: segmentData.toLocation.latitude,
-                        longitude: segmentData.toLocation.longitude,
-                        address: segmentData.toLocation.address
-                    ),
+                    fromLocation: fromLocation,
+                    toLocation: toLocation,
                     transportationMode: TransportationMode(rawValue: segmentData.transportationMode) ?? .subway,
-                    travelTime: TimeInterval(segmentData.travelTime),
+                    travelTime: segmentData.travelTime,
                     cost: segmentData.cost,
                     instructions: segmentData.instructions,
-                    departureTime: event.startDate.addingTimeInterval(-TimeInterval(segmentData.travelTime)),
+                    departureTime: event.startDate.addingTimeInterval(-Double(segmentData.travelTime)),
                     arrivalTime: event.startDate
                 )
             }
             
             return RoutePlan(
                 segments: segments,
-                totalTravelTime: TimeInterval(response.totalTravelTime),
+                totalTravelTime: response.totalTravelTime,
                 totalCost: response.totalCost
             )
         } catch {
             print("❌ Failed to parse complete route plan: \(error.localizedDescription)")
             return createFallbackRoutePlan(for: events)
         }
-    }
-    
-    private func createFallbackRoutePlan(for events: [CalendarEvent]) -> RoutePlan {
-        var segments: [RouteSegment] = []
-        var currentLocation = LocationCoordinate(latitude: 40.7128, longitude: -74.0060, address: "Starting Point")
-        
-        for event in events {
-            let eventLocation = LocationCoordinate(latitude: 40.7128, longitude: -74.0060, address: event.location)
-            
-            let segment = RouteSegment(
-                fromLocation: currentLocation,
-                toLocation: eventLocation,
-                transportationMode: .subway,
-                travelTime: 1800, // 30 minutes
-                cost: 2.75,
-                instructions: "Take subway to \(event.title)",
-                departureTime: event.startDate.addingTimeInterval(-1800),
-                arrivalTime: event.startDate
-            )
-            segments.append(segment)
-            currentLocation = eventLocation
-        }
-        
-        return RoutePlan(
-            segments: segments,
-            totalTravelTime: TimeInterval(segments.count * 1800),
-            totalCost: Double(segments.count) * 2.75
-        )
-    }
-    
-    private func parseAISuggestions(from jsonString: String) -> [AISuggestion] {
-        print("🔍 Raw AI response: \(jsonString)")
-        
-        // Clean the JSON string first
-        let cleanedJson = cleanJsonString(jsonString)
-        print("🔍 Cleaned JSON: \(cleanedJson)")
-        
-        // Try to parse the cleaned JSON
-        if let data = cleanedJson.data(using: .utf8) {
-            do {
-                let decoder = JSONDecoder()
-                let response = try decoder.decode(AISuggestionsResponse.self, from: data)
-                print("✅ Successfully parsed \(response.suggestions.count) AI suggestions")
-                return response.suggestions
-            } catch {
-                print("❌ Failed to parse cleaned JSON: \(error.localizedDescription)")
-                print("🔍 JSON parsing error details: \(error)")
-            }
-        }
-        
-        // Fallback to basic suggestions
-        print("🔄 Using fallback suggestions")
-        return createFallbackSuggestions()
     }
     
     private func cleanJsonString(_ jsonString: String) -> String {
@@ -283,28 +235,35 @@ class AIRoutePlanner: ObservableObject {
         return cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    private func createFallbackSuggestions() -> [AISuggestion] {
-        return [
-            AISuggestion(
-                type: .routeOptimization,
-                title: "Optimize Your Route",
-                description: "Consider the order of your events to minimize travel time",
-                confidence: 0.7,
-                action: "Reorder Events",
-                costSavings: nil,
-                timeSavings: 1800
-            ),
-            AISuggestion(
-                type: .transportation,
-                title: "Choose Transportation Wisely",
-                description: "Subway is often faster and cheaper than rideshare in NYC",
-                confidence: 0.8,
-                action: "Use Subway",
-                costSavings: 15.0,
-                timeSavings: nil
+    private func createFallbackRoutePlan(for events: [CalendarEvent]) -> RoutePlan {
+        var segments: [RouteSegment] = []
+        var currentLocation = LocationCoordinate(latitude: 40.7128, longitude: -74.0060, address: "Starting Point")
+        
+        for event in events {
+            let eventLocation = LocationCoordinate(latitude: 40.7128, longitude: -74.0060, address: event.location)
+            
+            let segment = RouteSegment(
+                fromLocation: currentLocation,
+                toLocation: eventLocation,
+                transportationMode: .subway,
+                travelTime: 1800, // 30 minutes
+                cost: 2.75,
+                instructions: "Take subway to \(event.title)",
+                departureTime: event.startDate.addingTimeInterval(-1800),
+                arrivalTime: event.startDate
             )
-        ]
+            segments.append(segment)
+            currentLocation = eventLocation
+        }
+        
+        return RoutePlan(
+            segments: segments,
+            totalTravelTime: segments.count * 1800,
+            totalCost: Double(segments.count) * 2.75
+        )
     }
+    
+
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -315,38 +274,4 @@ class AIRoutePlanner: ObservableObject {
     }
 }
 
-// MARK: - AI Response Models
-struct AISuggestionsResponse: Codable {
-    let suggestions: [AISuggestion]
-}
-
-struct RouteSegmentResponse: Codable {
-    let segments: [RouteSegmentData]
-}
-
-struct RouteSegmentData: Codable {
-    let fromLocation: LocationCoordinateData
-    let toLocation: LocationCoordinateData
-    let transportationMode: String
-    let travelTime: Int
-    let cost: Double
-    let instructions: String
-}
-
-struct LocationCoordinateData: Codable {
-    let latitude: Double
-    let longitude: Double
-    let address: String
-}
-
-struct RoutePlan: Codable {
-    let segments: [RouteSegment]
-    let totalTravelTime: TimeInterval
-    let totalCost: Double
-}
-
-struct CompleteRoutePlanResponse: Codable {
-    let segments: [RouteSegmentData]
-    let totalTravelTime: Int
-    let totalCost: Double
-} 
+// AI Response models are defined in Models.swift 

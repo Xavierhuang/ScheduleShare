@@ -116,7 +116,6 @@ struct EventFormSheet: View {
                                     endDate: eventEndDate,
                                     location: eventLocation.isEmpty ? nil : eventLocation,
                                     notes: eventNotes.isEmpty ? nil : eventNotes,
-                                    sourceImage: nil,
                                     extractedInfo: existingEvent.extractedInfo,
                                     eventIdentifier: existingEvent.eventIdentifier
                                 )

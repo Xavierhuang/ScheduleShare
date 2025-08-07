@@ -125,7 +125,6 @@ struct EventDetailsView: View {
             endDate: finalEndDate,
             location: location.isEmpty ? nil : location,
             notes: notes.isEmpty ? nil : notes,
-            sourceImage: sourceImage,
             extractedInfo: extractedInfo
         )
         

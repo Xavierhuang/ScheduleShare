@@ -9,7 +9,7 @@ import Foundation
 import OpenAI
 
 class AITextExtractor: ObservableObject {
-    private let apiKey = "YOUR_OPENAI_API_KEY_HERE" // Replace with your actual OpenAI API key
+    private let apiKey = "" // Replace with your actual OpenAI API key
     private var openAIClient: OpenAI?
     
     init() {
@@ -183,29 +183,4 @@ class AITextExtractor: ObservableObject {
     }
 }
 
-// MARK: - Error Types
-enum AIExtractionError: Error, LocalizedError {
-    case invalidURL
-    case noData
-    case invalidResponse
-    case invalidJSON
-    case apiError(String)
-    case clientNotInitialized
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid API URL"
-        case .noData:
-            return "No data received from API"
-        case .invalidResponse:
-            return "Invalid response from AI service"
-        case .invalidJSON:
-            return "Invalid JSON in AI response"
-        case .apiError(let message):
-            return "API Error: \(message)"
-        case .clientNotInitialized:
-            return "OpenAI client not initialized"
-        }
-    }
-} 
+// Error types are defined in Models.swift 

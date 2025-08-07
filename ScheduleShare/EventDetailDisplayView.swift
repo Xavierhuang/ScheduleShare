@@ -176,25 +176,7 @@ struct EventDetailDisplayView: View {
                         }
                     }
                     
-                    // Source Image
-                    if let image = event.sourceImage {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Image(systemName: "photo")
-                                    .font(.title2)
-                                    .foregroundColor(.purple)
-                                Text("Source Screenshot")
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
-                            }
-                            
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .cornerRadius(12)
-                                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                        }
-                    }
+                    // Source Image section removed since CalendarEvent doesn't have sourceImage property
                     
 
                     
@@ -280,7 +262,6 @@ struct EventDetailDisplayView: View {
             endDate: editEndDate,
             location: editLocation.isEmpty ? nil : editLocation,
             notes: editNotes.isEmpty ? nil : editNotes,
-            sourceImage: event.sourceImage,
             extractedInfo: event.extractedInfo,
             eventIdentifier: event.eventIdentifier
         )
