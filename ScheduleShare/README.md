@@ -1,139 +1,187 @@
-# ScheduleShare - Smart Calendar from Screenshots
+# ScheduleShare - AI-Powered Smart Calendar & Event Sharing
 
-A powerful iOS app that automatically extracts event information from screenshots and adds them to your calendar. Built with SwiftUI and powered by iOS Vision framework.
+## 📱 Overview
 
-## Features
+ScheduleShare is a revolutionary iOS app that transforms how you manage and share your schedule. Unlike traditional calendar apps, ScheduleShare uses AI to intelligently extract event information from screenshots and provides smart route planning for multiple events in a day.
 
-### 🔍 Smart Text Extraction
-- **OCR Technology**: Uses iOS Vision framework for accurate text recognition
-- **AI Processing**: Intelligently parses dates, times, and locations from extracted text
-- **High Confidence**: Shows extraction confidence percentage
+## ✨ Key Features
 
-### 📅 Seamless Calendar Integration
-- **Auto-Save**: Automatically saves events to your iOS calendar
-- **EventKit Integration**: Full integration with iOS Calendar app
-- **Edit & Refine**: Review and edit extracted information before saving
+### 🤖 AI-Powered Event Extraction
+- **Smart Screenshot Processing**: Take a screenshot of any event and let AI extract all details
+- **Intelligent Parsing**: Automatically identifies event title, date, time, location, and notes
+- **High Accuracy**: Uses GPT-4 for precise information extraction
+- **Timezone Aware**: Automatically handles New York timezone for accurate scheduling
 
-### 📱 Easy Sharing
-- **Multiple Formats**: Share as ICS files, via email, or text messages
-- **Friend-Friendly**: Easy calendar sharing with friends and colleagues
-- **Export Options**: Export all events or individual calendars
+### 🗺️ AI Route Planning
+- **Multi-Event Optimization**: Plan routes between multiple events in a single day
+- **Real-Time Location**: Uses your current location for optimal route calculation
+- **Transportation Options**: Suggests best transportation modes (subway, walking, rideshare)
+- **Time & Cost Estimates**: Provides realistic travel times and costs
+- **Interactive Maps**: Tap locations to open in Google Maps or Apple Maps
 
-### 📸 Flexible Input
-- **Camera Capture**: Take new photos of event information
-- **Photo Library**: Select existing screenshots from your library
-- **Smart Recognition**: Works with various event formats and layouts
+### 📅 Smart Calendar Integration
+- **Seamless Sync**: Direct integration with iOS Calendar
+- **Event Management**: Create, edit, and delete events with ease
+- **Visual Calendar**: Beautiful month view with event indicators
+- **Real-Time Updates**: Calendar refreshes automatically after changes
 
-## How It Works
+### 📤 Advanced Sharing Options
+- **Flexible Sharing**: Share single events, today's events, this week, or this month
+- **Selective Sharing**: Choose specific events to share with friends
+- **Multiple Formats**: Share via email, messages, or calendar links
+- **iCal Support**: Generate .ics files for easy calendar import
 
-1. **Capture**: Take a photo or select a screenshot containing event information
-2. **Extract**: The app uses OCR to extract text from the image
-3. **Parse**: AI algorithms identify dates, times, locations, and event titles
-4. **Review**: Edit and refine the extracted information
-5. **Save**: Add the event to your calendar with one tap
-6. **Share**: Easily share your calendar with friends
+### 🎨 Modern UI/UX
+- **Beautiful Design**: Clean, modern interface with purple accent theme
+- **Smooth Animations**: Polished transitions and loading indicators
+- **Intuitive Navigation**: Easy-to-use tab-based interface
+- **Responsive Layout**: Optimized for all iPhone sizes
 
-## App Structure
+## 🚀 Why ScheduleShare is Better
 
-### Main Components
+### vs. Google Calendar
+- **AI Extraction**: No manual typing - just screenshot and go
+- **Route Planning**: Built-in navigation between events
+- **Smart Sharing**: More granular control over what to share
+- **Privacy**: Local processing with optional cloud features
 
-- **Event Creation View**: Primary interface for capturing and processing screenshots
-- **Calendar View**: Display and manage your events with a visual calendar
-- **Settings**: Manage permissions, export data, and app information
+### vs. Apple Calendar
+- **AI-Powered**: Intelligent event extraction from any source
+- **Route Optimization**: Plan your day efficiently
+- **Enhanced Sharing**: Multiple sharing options and formats
+- **Modern Interface**: More intuitive and feature-rich design
 
-### Core Technologies
+### vs. Luma & Meetup.com
+- **Personal Focus**: Designed for individual schedule management
+- **AI Integration**: Smart extraction and route planning
+- **Calendar Sync**: Direct integration with your existing calendar
+- **Offline Capable**: Works without internet for basic features
 
-- **SwiftUI**: Modern iOS UI framework
-- **Vision Framework**: Apple's OCR and image analysis
-- **EventKit**: iOS calendar integration
-- **Natural Language**: Text processing and analysis
-- **MessageUI**: Email and message sharing
+## 🛠️ Technical Features
 
-## Setup Requirements
+### AI & Machine Learning
+- **OpenAI Integration**: Uses GPT-4 for intelligent text extraction
+- **Natural Language Processing**: Understands various event formats
+- **Route Optimization**: AI-powered travel planning
+- **Context Awareness**: Considers event timing and location
+
+### iOS Integration
+- **EventKit Framework**: Native calendar integration
+- **CoreLocation**: Real-time location services
+- **SwiftUI**: Modern, responsive interface
+- **iOS 15+ Support**: Latest iOS features and optimizations
+
+### Data Management
+- **Local Storage**: Secure event storage on device
+- **Cloud Sync**: Optional iCloud integration
+- **Privacy First**: No unnecessary data collection
+- **Export Options**: Multiple sharing formats
+
+## 📋 Setup Instructions
+
+### Prerequisites
+- iOS 15.0 or later
+- iPhone with camera access
+- OpenAI API key (for AI features)
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Xavierhuang/ScheduleShare.git
+   ```
+
+2. Open in Xcode:
+   ```bash
+   cd ScheduleShare
+   open ScheduleShare.xcodeproj
+   ```
+
+3. Configure API Keys:
+   - Open `ScheduleShare/AITextExtractor.swift`
+   - Replace `YOUR_OPENAI_API_KEY_HERE` with your OpenAI API key
+   - Open `ScheduleShare/Models.swift`
+   - Replace `YOUR_OPENAI_API_KEY_HERE` with your OpenAI API key
+
+4. Build and Run:
+   - Select your target device
+   - Press Cmd+R to build and run
 
 ### Permissions Required
-The app requires the following permissions (add to Info.plist):
+- **Calendar Access**: To read and write events
+- **Location Services**: For route planning
+- **Camera**: To take screenshots of events
+- **Photo Library**: To access saved screenshots
 
-```xml
-<key>NSCameraUsageDescription</key>
-<string>ScheduleShare needs camera access to capture event information.</string>
+## 🎯 Use Cases
 
-<key>NSPhotoLibraryUsageDescription</key>
-<string>ScheduleShare needs photo library access to select screenshots.</string>
+### For Professionals
+- **Meeting Management**: Quickly add meetings from screenshots
+- **Travel Planning**: Optimize routes between client meetings
+- **Event Sharing**: Share conference schedules with colleagues
 
-<key>NSCalendarsUsageDescription</key>
-<string>ScheduleShare needs calendar access to save events.</string>
-```
+### For Students
+- **Class Scheduling**: Extract class times from screenshots
+- **Study Planning**: Plan routes between classes and study sessions
+- **Group Projects**: Share schedules with project partners
 
-### iOS Version
-- Minimum iOS 14.0
-- Optimized for iOS 15.0+
+### For Social Events
+- **Party Planning**: Organize multiple events in a day
+- **Friend Coordination**: Share event details easily
+- **Venue Hopping**: Plan routes between different venues
 
-## File Structure
+## 🔧 Architecture
 
-```
-ScheduleShare/
-├── Models.swift                    # Data models and app state
-├── TextExtractor.swift            # OCR and text parsing logic
-├── ImagePicker.swift              # Camera and photo library integration
-├── CalendarManager.swift          # EventKit calendar integration
-├── SharingManager.swift           # Calendar sharing functionality
-├── EventCreationView.swift        # Main event creation interface
-├── EventDetailsView.swift         # Event editing and refinement
-├── CalendarView.swift             # Calendar display and management
-├── EventDetailDisplayView.swift   # Detailed event viewing
-├── ContentView.swift              # Main app navigation and settings
-└── README.md                      # This file
-```
+### Core Components
+- **AITextExtractor**: Handles AI-powered text extraction
+- **AIRoutePlanner**: Manages route planning and optimization
+- **CalendarManager**: Handles calendar integration
+- **SharingManager**: Manages event sharing functionality
+- **Models**: Data structures and state management
 
-## Key Features in Detail
+### Design Patterns
+- **MVVM Architecture**: Clean separation of concerns
+- **ObservableObject**: Reactive state management
+- **Singleton Pattern**: Shared service management
+- **Protocol-Oriented**: Flexible and testable design
 
-### Smart Text Recognition
-- Recognizes various date formats (MM/DD/YYYY, DD-MM-YYYY, etc.)
-- Identifies time patterns (12/24 hour formats)
-- Extracts location information (addresses, venue names)
-- Handles multiple languages and text orientations
+## 🚀 Future Enhancements
 
-### Calendar Integration
-- Creates events in default calendar
-- Supports custom calendars
-- Maintains event metadata and source images
-- Syncs with iCloud and other calendar services
+### Planned Features
+- **Multi-Platform Support**: iPad and macOS versions
+- **Advanced AI**: More sophisticated route optimization
+- **Social Features**: Event discovery and recommendations
+- **Analytics**: Schedule insights and optimization suggestions
+- **Widgets**: iOS home screen widgets for quick access
 
-### Sharing Capabilities
-- ICS file export for universal calendar compatibility
-- Email sharing with formatted event lists
-- Message sharing with readable event summaries
-- Future: Direct calendar subscription links
+### API Integrations
+- **Google Maps API**: Enhanced navigation features
+- **Weather API**: Weather-aware route planning
+- **Public Transit API**: Real-time transit information
+- **Rideshare APIs**: Uber/Lyft integration
 
-## Usage Tips
+## 🤝 Contributing
 
-1. **Best Results**: Use clear, well-lit photos with readable text
-2. **Event Formats**: Works best with structured event information (invitations, flyers, etc.)
-3. **Review Always**: Always review extracted information before saving
-4. **Permissions**: Grant all requested permissions for full functionality
+We welcome contributions! Please feel free to submit issues and pull requests.
 
-## Future Enhancements
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-- [ ] Cloud sync for shared calendars
-- [ ] Recurring event detection
-- [ ] Multi-language support enhancement
-- [ ] Integration with other calendar services
-- [ ] Batch processing for multiple events
+## 📄 License
 
-## Development
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Built using:
-- Xcode 15.0+
-- SwiftUI 5.0
-- iOS 14.0+ target
-- Vision Framework
-- EventKit Framework
+## 🙏 Acknowledgments
 
-## Support
-
-For issues or feature requests, the app includes comprehensive error handling and user feedback systems.
+- **OpenAI**: For providing the GPT-4 API
+- **Apple**: For EventKit and SwiftUI frameworks
+- **SwiftUI Community**: For inspiration and best practices
 
 ---
 
-**ScheduleShare** - Transform your screenshots into organized calendar events! 📅✨
+**Made with ❤️ for better schedule management**
+
+*ScheduleShare - Where AI meets your calendar*
